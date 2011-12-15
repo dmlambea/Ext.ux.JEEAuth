@@ -1,0 +1,74 @@
+This is the README file for the jeeauth.js extension for ExtJS v4.0
+
+Author: Daniel M. Lambea
+Email: dmlambea [at] gmail [dot] com
+License: This has several licensing options to fit your needs.
+This software is licensed under the terms of the Open Source LGPL 3.0 for non-commercial, non-bundling use.
+You can read the license terms in the accompanying file COPYING.LESSER. If you wish to bundle this software
+in a package that will be sold or otherwise directly generate revenue, please contact me at the email address
+above.
+
+0) Files included in this distribution
+README - this file.
+COPYING - The GPL 3.0 license terms.
+COPYING.LESSER - The LGPL 3.0 license terms.
+jeeauth.js - the actual library minified for production.
+jeeauth-src.js - the actual library's source code.
+examples/jeeauth-custom-spanish.js - sample customization (spanish translation of the extension UI).
+examples/jeeauth-custom-springsecurity.js - sample customization (Spring Security instead of default JAAS).
+examples/authRequest.json - sample authentication request's JSON response.
+examples/loginform.css - sample CSS customization of the built-in LoginWindow class.
+
+1) Installation
+Include jeeauth.js in your <script>..</script> tags, after any and all ExtJS files.
+Include the customization file, if any (e.g. jeeauth-custom-spanish.js), in your <script>..</script> tags, after jeeauth.js.
+
+2) Limitations
+Authentication requests have to be received from the server in JSON format. See the authRequest.json sample file
+for details on how to provide a JSON boolean flag. The flag has to be named "authRequest". Additionally, any 403 response
+from the server ("Forbidden") will trigger the auth mechanism.
+
+3) Overview
+In a JEE, form-based, secured webapp the server allows to use all public resources with no limit.
+But once a protected resource is accessed, the container checks the authentication information to be current.
+If the user is not authenticated or the session has expired, the container automatically saves back the request
+and sends the configured login form to the user. Once the POSTed credentials are valid, the container looks for
+the saved request, processes it and sends the original request's response to the user.
+
+If we are using AJAX requests, e.g. by using a remote store with a grid, and we let the session expire, then
+the grid will receive the login form instead of the expected record data, thus causing an error. This is where
+jeeauth makes sense.
+
+Jeeauth overrides the Ext.Ajax.request() method in order to detect the authentication request coming from
+the server. Every outgoing request is intercepted. If the response contains a special boolean indicator set
+to true, then the request is cached and a login form is shown. The login form's data is then submitted
+to the server in an attempt to authenticate the user. The login form is shown and submitted again and again until the success
+condition is detected (i.e., when the response is missing the boolean indicator). At this point, jeeauth recovers the original request
+and triggers it again transparently. In the example above, the grid would notice nothing. From the grid's point of view,
+a request was made and a valid response was received.
+
+Every other requests made while the authentication procedure takes place are queued until the user is authenticated.
+
+4) Usage
+4a) Initialization
+Simply include the jeeauth file after ExtJS classes. Jeeauth installs automatically by overriding Ext.Ajax's request method.
+
+4b) Customization
+The namespace Ext.ux.JEEAuth contains several attributes that allows you get fine grained control over the library. Please
+see examples/jeeauth-custom-*.js. The fields are explained here:
+
+  * loginActionConfig: a config object to be applied to the login button in the login form. The handler and the scope cannot
+be set, but all other configuration options are valid to be customized.
+  * authMaskConfig: config object to be applied as LoadMask during the authentication process.
+  * validationErrorTitle: title of the message box that opens when the user tries to submit an invalid login form.
+  * validationErrorText: text of the message box that opens when the user tries to submit an invalid login form.
+  * blankText: text for the username and password fields when left blank.
+  * windowTitle: title of the login window.
+  * formAuthenticationURL: the URL to authenticate the user. In JAAS environments it defaults to 'j_security_check'.
+  * usernameFieldLabel: label for the username field.
+  * passwordFieldLabel: label for the password field.
+  * usernameFieldName: name of the username field. In JAAS environments it defaults to 'j_username'.
+  * passwordFieldName: name of the password field. In JAAS environments it defaults to 'j_password'.
+
+Also refer to examples/loginform.css for a sample customization of the built-in LoginWindow class.
+

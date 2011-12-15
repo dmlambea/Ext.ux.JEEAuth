@@ -1,0 +1,24 @@
+/**
+ * JEE authentication extension for Ext - LoginWindow customization sample.
+ * Copyright 2008, 2011, Daniel M. Lambea <dmlambea@gmail.com>
+ *
+ * This software is licensed under the terms of the Open Source LGPL 3.0 for
+ * non-commercial, non-bundling use. You can read the license terms in the
+ * accompanying file COPYING.LESSER. If you wish to bundle this software in a
+ * package that will be sold or otherwise directly generate revenue, please
+ * contact me at the email address above. 
+ */
+
+/**
+ * Username and password fields decoration. Note that you must provide
+ * the icons 'user.png' and 'pass.png'.
+ */
+input[name='j_username'] {
+        background: white url('user.png') right no-repeat;
+        padding-right: 18px;
+}
+
+input[name='j_password'] {
+        background: white url('pass.png') right no-repeat;
+        padding-right: 18px;
+}
